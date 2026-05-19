@@ -49,8 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             // Auto-elevate owner email to admin if not already
             if (firebaseUser.email === 'itzraviking@gmail.com' && data.role !== 'admin') {
-              data.role = 'admin';
-              await setDoc(profileRef, data, { merge: true });
+              try {
+                await setDoc(profileRef, { role: 'admin' }, { merge: true });
+                data.role = 'admin';
+              } catch (e) {
+                console.error('Owner elevation failed:', e);
+              }
             }
             
             setProfile(data);
@@ -92,7 +96,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isLoggingIn) return;
     setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
     
     try {
       await signInWithPopup(auth, provider);
@@ -100,7 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
         console.warn('Login attempt interrupted or cancelled.');
       } else {
-        console.error('Login error:', error);
+        console.error('Login error:', error.code, error.message);
+        // If it's a domain/config issue, it usually shows "The requested action is invalid" in error.message
       }
     } finally {
       setIsLoggingIn(false);

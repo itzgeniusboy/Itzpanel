@@ -15,7 +15,12 @@ export const Register = () => {
 
   if (loading) return null;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile) return <Navigate to="/" replace />;
+  if (profile) return <Navigate to="/dashboard" replace />;
+  
+  // Auto-redirect owner to dashboard if they land here (profile will be created by AuthProvider)
+  if (user.email === 'itzraviking@gmail.com') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
