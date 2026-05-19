@@ -31,6 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let unsubscribeProfile: (() => void) | null = null;
+    
+    // Safety timeout to prevent infinite loading screen
+    const safetyTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 8000);
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       // Cleanup previous profile listener
@@ -44,11 +49,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (firebaseUser) {
         const profileRef = doc(db, 'users', firebaseUser.uid);
         unsubscribeProfile = onSnapshot(profileRef, async (docSnap) => {
+          clearTimeout(safetyTimeout);
           if (docSnap.exists()) {
             const data = docSnap.data() as UserProfile;
             
             // Auto-elevate owner email to admin if not already
-            if (firebaseUser.email === 'itzraviking@gmail.com' && data.role !== 'admin') {
+            const ownerEmail = 'itzraviking@gmail.com';
+            if (firebaseUser.email?.toLowerCase() === ownerEmail && data.role !== 'admin') {
               try {
                 await setDoc(profileRef, { role: 'admin' }, { merge: true });
                 data.role = 'admin';
@@ -60,16 +67,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setProfile(data);
             setLoading(false);
           } else {
-            const isBootstrappedAdmin = firebaseUser.email === 'itzraviking@gmail.com';
-            if (isBootstrappedAdmin) {
+            const ownerEmail = 'itzraviking@gmail.com';
+            const isOwner = firebaseUser.email?.toLowerCase() === ownerEmail;
+            
+            if (isOwner) {
               const newProfile: UserProfile = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email || '',
                 role: 'admin',
+                balance: 1000000,
                 createdAt: Date.now()
               };
-              await setDoc(profileRef, newProfile);
-              setProfile(newProfile);
+              try {
+                await setDoc(profileRef, newProfile);
+                setProfile(newProfile);
+              } catch (e) {
+                console.error('Initial owner profile creation failed:', e);
+              }
               setLoading(false);
             } else {
               setProfile(null);
@@ -77,10 +91,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
         }, (error) => {
-          handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
+          console.error('Profile snapshot error:', error);
+          clearTimeout(safetyTimeout);
           setLoading(false);
         });
       } else {
+        clearTimeout(safetyTimeout);
         setProfile(null);
         setLoading(false);
       }
@@ -89,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       unsubscribeAuth();
       if (unsubscribeProfile) unsubscribeProfile();
+      clearTimeout(safetyTimeout);
     };
   }, []);
 

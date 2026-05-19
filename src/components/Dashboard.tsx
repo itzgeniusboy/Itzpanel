@@ -47,6 +47,10 @@ import {
 } from 'recharts';
 import Markdown from 'react-markdown';
 
+const Loader2 = ({ className, size }: { className?: string, size?: number }) => (
+  <Activity className={`${className} animate-pulse px-1`} size={size} />
+);
+
 export const Dashboard = () => {
   const { profile, isAdmin } = useAuth();
   const [stats, setStats] = useState({
@@ -56,6 +60,9 @@ export const Dashboard = () => {
     expiringSoon: 0,
     totalBuilds: 0
   });
+
+  // Ensure profile is available - though ProtectedRoute handles this
+  if (!profile) return null;
   const [chartData, setChartData] = useState<any[]>([]);
   const [myBuilds, setMyBuilds] = useState<AppBuild[]>([]);
   const [recentActions, setRecentActions] = useState<any[]>([]);
@@ -591,8 +598,4 @@ export const Dashboard = () => {
     </div>
   );
 };
-
-const Loader2 = ({ className, size }: { className?: string, size?: number }) => (
-  <Activity className={`${className} animate-pulse px-1`} size={size} />
-);
 

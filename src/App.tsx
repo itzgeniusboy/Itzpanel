@@ -12,6 +12,28 @@ import { AdminResellers } from './components/AdminResellers';
 import { Marketplace } from './components/Marketplace';
 import { Landing } from './components/Landing';
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-10 text-center">
+          <h1 className="text-4xl font-bold mb-4">Protocol Termination</h1>
+          <p className="text-zinc-500 mb-8">An unexpected exception occurred in the matrix core.</p>
+          <button onClick={() => window.location.href = '/'} className="px-6 py-3 bg-blue-600 rounded-xl font-bold">Restart Terminal</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
   const { user, profile, loading, isAdmin } = useAuth();
 
@@ -104,11 +126,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
