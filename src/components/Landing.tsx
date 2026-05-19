@@ -6,6 +6,8 @@ import { useAuth } from '../lib/auth';
 
 export const Landing = () => {
   const { user, profile } = useAuth();
+  const isOwner = user?.email?.toLowerCase() === 'itzraviking@gmail.com';
+
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-hidden">
       {/* Dynamic Background */}
@@ -29,7 +31,7 @@ export const Landing = () => {
           <a href="#security" className="hover:text-white transition-colors">Security</a>
         </div>
         <Link 
-          to={user ? (profile ? "/dashboard" : "/register") : "/login"}
+          to={user ? (profile || isOwner ? "/dashboard" : "/register") : "/login"}
           className="px-6 py-3 rounded-full bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all active:scale-95"
         >
           {user ? "Enter Project" : "Access Portal"}
@@ -57,7 +59,7 @@ export const Landing = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
-              to={user ? (profile ? "/dashboard" : "/register") : "/login"}
+              to={user ? (profile || isOwner ? "/dashboard" : "/register") : "/login"}
               className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-blue-600 text-sm font-bold uppercase tracking-widest hover:bg-blue-500 transition-all shadow-[0_0_40px_rgba(59,130,246,0.3)] group flex items-center justify-center gap-2"
             >
               {user ? "Initialize Terminal" : "Start Deployment"} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />

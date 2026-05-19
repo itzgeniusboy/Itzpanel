@@ -17,10 +17,8 @@ export const Register = () => {
   if (!user) return <Navigate to="/login" replace />;
   if (profile) return <Navigate to="/dashboard" replace />;
   
-  // Auto-redirect owner to dashboard if they land here (profile will be created by AuthProvider)
-  if (user.email === 'itzraviking@gmail.com') {
-    return <Navigate to="/dashboard" replace />;
-  }
+  // Handled by ProtectedRoute: owner is allowed to bypass register if specifically going to dashboard,
+  // but if they manually land here, they just see the invite code screen (which they shouldn't need, but it's safe).
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

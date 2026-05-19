@@ -39,8 +39,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-800 border-t-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#050505]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-800 border-t-blue-500 shadow-[0_0_20_rgba(59,130,246,0.3)] mb-4" />
+        <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.3em] animate-pulse">Initializing Terminal Matrix...</p>
       </div>
     );
   }
@@ -49,7 +50,20 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
     return <Navigate to="/login" replace />;
   }
 
+  // Profile check - graceful loading
   if (!profile) {
+    if (isAdmin) return <>{children}</>;
+    
+    // Explicit check for owner provisioning
+    const isOwner = user.email?.toLowerCase() === 'itzraviking@gmail.com';
+    if (isOwner) {
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#050505]">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-800 border-t-blue-500 mb-4" />
+          <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.3em]">Deploying Owner Matrix...</p>
+        </div>
+      );
+    }
     return <Navigate to="/register" replace />;
   }
 
@@ -61,11 +75,21 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
 };
 
 const AppContent = () => {
-    const { user, profile } = useAuth();
+    const { user, profile, loading } = useAuth();
+    const isOwner = user?.email?.toLowerCase() === 'itzraviking@gmail.com';
+
+    if (loading) {
+        return (
+          <div className="flex min-h-screen flex-col items-center justify-center bg-[#050505]">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-800 border-t-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] mb-4" />
+            <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.3em] animate-pulse">Initializing Terminal Matrix...</p>
+          </div>
+        );
+    }
 
     return (
         <Routes>
-            <Route path="/" element={user && profile ? <Navigate to="/dashboard" replace /> : <Landing />} />
+            <Route path="/" element={user && (profile || isOwner) ? <Navigate to="/dashboard" replace /> : <Landing />} />
             <Route path="/home" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

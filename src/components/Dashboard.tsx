@@ -62,7 +62,18 @@ export const Dashboard = () => {
   });
 
   // Ensure profile is available - though ProtectedRoute handles this
-  if (!profile) return null;
+  // Fix for owner black screen: if profile is null but it's the owner, show a mini loading state
+  if (!profile) {
+    if (isAdmin || useAuth().user?.email?.toLowerCase() === 'itzraviking@gmail.com') {
+      return (
+        <div className="flex h-full flex-col items-center justify-center p-20 animate-pulse">
+          <Terminal className="h-10 w-10 text-blue-500 mb-4" />
+          <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">Awaiting Grid Profile Data...</p>
+        </div>
+      );
+    }
+    return null;
+  }
   const [chartData, setChartData] = useState<any[]>([]);
   const [myBuilds, setMyBuilds] = useState<AppBuild[]>([]);
   const [recentActions, setRecentActions] = useState<any[]>([]);
