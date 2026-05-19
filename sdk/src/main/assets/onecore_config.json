@@ -1,0 +1,12 @@
+{
+  "enable_device_spoofer": true,
+  "device_model": "GM1913",
+  "device_manufacturer": "OnePlus",
+  "device_brand": "OnePlus",
+  "device_product": "OnePlus7Pro",
+  "enable_location_spoof": true,
+  "mock_lat": "51.5074",
+  "mock_lon": "0.1278",
+  "enable_debug_logger": true,
+  "sandbox_process_name": "com.onecore.sandbox"
+}

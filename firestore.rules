@@ -1,0 +1,154 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. GLOBAL SAFETY NET
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL HELPERS ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        request.auth.token.email == 'itzraviking@gmail.com'
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- ENTITY VALIDATIONS ---
+
+    function isValidUser(data) {
+      return data.uid is string && 
+             data.email is string &&
+             data.role in ['admin', 'reseller', 'user'] &&
+             data.createdAt is int &&
+             data.keys().hasAll(['uid', 'email', 'role', 'createdAt']);
+    }
+
+    function isValidTransaction(data) {
+      return data.id is string &&
+             data.userId is string &&
+             data.amount is int &&
+             data.type in ['topup', 'purchase', 'refund'] &&
+             data.createdAt is int &&
+             data.keys().hasAll(['id', 'userId', 'amount', 'type', 'createdAt']);
+    }
+
+    function isValidInviteCode(data) {
+      return data.id is string &&
+             data.createdBy is string &&
+             data.isUsed is bool &&
+             data.status in ['active', 'suspended', 'expired'] &&
+             data.createdAt is int &&
+             data.expiresAt is int &&
+             data.keys().hasAll(['id', 'createdBy', 'isUsed', 'status', 'createdAt', 'expiresAt']);
+    }
+
+    function isValidLicense(data) {
+      return data.id is string &&
+             data.key is string &&
+             data.resellerId is string &&
+             data.status in ['active', 'paused', 'expired'] &&
+             data.expiresAt is int &&
+             data.createdAt is int &&
+             data.keys().hasAll(['id', 'key', 'resellerId', 'status', 'expiresAt', 'createdAt']);
+    }
+
+    function isValidAppBuild(data) {
+      return data.id is string &&
+             data.resellerId is string &&
+             data.appName is string &&
+             data.packageName is string &&
+             data.isActive is bool &&
+             data.createdAt is int &&
+             data.keys().hasAll(['id', 'resellerId', 'appName', 'packageName', 'isActive', 'createdAt']);
+    }
+
+    function isValidSubscriptionPlan(data) {
+      return data.name is string && data.name.size() <= 100 &&
+             data.price is int && data.price >= 0 &&
+             data.duration is int &&
+             data.durationUnit in ['days', 'lifetime'] &&
+             data.buildLimit is int &&
+             data.features is list &&
+             data.keys().hasAll(['name', 'price', 'duration', 'durationUnit', 'buildLimit', 'features']);
+    }
+
+    // --- COLLECTION MATCHES ---
+
+    match /users/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == uid && isValidUser(incoming());
+      allow update: if isSignedIn() && (request.auth.uid == uid || isAdmin()) && 
+                    isValidUser(incoming()) && 
+                    (isAdmin() || incoming().diff(existing()).affectedKeys().hasOnly(['referredBy', 'lastReferralKey', 'apiSecret', 'businessName']));
+      allow delete: if isAdmin();
+    }
+
+    match /transactions/{txId} {
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin() && isValidTransaction(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /plans/{planId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidSubscriptionPlan(incoming());
+    }
+
+    match /inviteCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow create: if isAdmin() && isValidInviteCode(incoming());
+      allow update: if (isAdmin() && isValidInviteCode(incoming())) || 
+                    (isSignedIn() && 
+                     incoming().diff(existing()).affectedKeys().hasOnly(['isUsed', 'usedBy']) &&
+                     incoming().isUsed == true && 
+                     existing().isUsed == false);
+      allow delete: if isAdmin();
+    }
+
+    match /licenses/{keyId} {
+      allow get: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.auth.uid == incoming().resellerId || isAdmin()) && isValidLicense(incoming());
+      allow update: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin()) && 
+                    isValidLicense(incoming()) &&
+                    (isAdmin() || incoming().diff(existing()).affectedKeys().hasOnly(['status', 'deviceId', 'note', 'currentUsage', 'buildCount']));
+      allow delete: if isAdmin();
+    }
+
+    match /builds/{buildId} {
+      allow get: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.auth.uid == incoming().resellerId || isAdmin()) && isValidAppBuild(incoming());
+      allow update: if isSignedIn() && (resource.data.resellerId == request.auth.uid || isAdmin()) && 
+                    isValidAppBuild(incoming()) &&
+                    (isAdmin() || incoming().diff(existing()).affectedKeys().hasOnly(['isActive', 'appName', 'packageName', 'version', 'status', 'downloadUrl', 'config']));
+      allow delete: if isAdmin();
+    }
+
+    match /system/config {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

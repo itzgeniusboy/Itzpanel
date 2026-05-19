@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Essential Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
+    <application>
+        <!-- Virtualization Components -->
+        <activity android:name="com.onecore.sdk.core.SandboxActivity" 
+                  android:process=":onecore_sandbox" 
+                  android:exported="false"
+                  android:theme="@android:style/Theme.NoTitleBar" />
+
+        <!-- System Call Bridge -->
+        <provider
+            android:name="com.onecore.sdk.core.SystemCallProvider"
+            android:authorities="${applicationId}.OneCore.SystemCallProvider"
+            android:exported="false"
+            android:process=":onecore_core" />
+
+        <!-- Stub Stacks (Multi-Process Infrastructure) -->
+        <service android:name="com.onecore.sdk.core.OneCoreService$P0" android:process=":p0" android:exported="false" />
+        <service android:name="com.onecore.sdk.core.OneCoreService$P1" android:process=":p1" android:exported="false" />
+        <service android:name="com.onecore.sdk.core.OneCoreService$P2" android:process=":p2" android:exported="false" />
+        
+        <activity android:name="com.onecore.sdk.core.StubActivity$P0" android:process=":p0" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:configChanges="orientation|screenSize|keyboardHidden" android:exported="false" />
+        <activity android:name="com.onecore.sdk.core.StubActivity$P1" android:process=":p1" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:configChanges="orientation|screenSize|keyboardHidden" android:exported="false" />
+        <activity android:name="com.onecore.sdk.core.StubActivity$P2" android:process=":p2" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:configChanges="orientation|screenSize|keyboardHidden" android:exported="false" />
+
+        <service android:name="com.onecore.sdk.core.SandboxHeartbeatService"
+                 android:process=":onecore_core"
+                 android:exported="false" />
+    </application>
+
+</manifest>

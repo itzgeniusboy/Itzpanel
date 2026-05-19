@@ -1,0 +1,151 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User roles and account info",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "reseller", "user"] },
+        "referredBy": { "type": "string" },
+        "lastReferralKey": { "type": "string" },
+        "balance": { "type": "integer" },
+        "apiSecret": { "type": "string" },
+        "businessName": { "type": "string" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "InviteCode": {
+      "title": "Invite Code",
+      "description": "Codes to register new resellers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "usedBy": { "type": "string" },
+        "usedAt": { "type": "integer" },
+        "isUsed": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["active", "suspended", "expired"] },
+        "expiresAt": { "type": "integer" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["id", "createdBy", "isUsed", "createdAt", "expiresAt", "status"]
+    },
+    "License": {
+      "title": "License",
+      "description": "SDK License/Access Key",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "key": { "type": "string" },
+        "resellerId": { "type": "string" },
+        "resellerEmail": { "type": "string" },
+        "deviceId": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "paused", "expired"] },
+        "expiresAt": { "type": "integer" },
+        "maxUsage": { "type": "integer" },
+        "currentUsage": { "type": "integer" },
+        "price": { "type": "integer" },
+        "note": { "type": "string" },
+        "appName": { "type": "string" },
+        "buildCount": { "type": "integer" },
+        "buildLimit": { "type": "integer" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["id", "key", "status", "expiresAt", "createdAt", "resellerId"]
+    },
+    "AppBuild": {
+      "title": "App Build",
+      "description": "Instance of a built application managed by user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "licenseId": { "type": "string" },
+        "resellerId": { "type": "string" },
+        "appName": { "type": "string" },
+        "packageName": { "type": "string" },
+        "version": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["queued", "processing", "finished", "failed"] },
+        "downloadUrl": { "type": "string" },
+        "config": { "type": "object" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["id", "resellerId", "appName", "packageName", "isActive", "createdAt"]
+    },
+    "SystemConfig": {
+      "title": "System Config",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "telegramId": { "type": "string" },
+        "siteName": { "type": "string" }
+      },
+      "required": ["telegramId", "siteName"]
+    },
+    "SubscriptionPlan": {
+      "title": "Subscription Plan",
+      "description": "Marketplace packages for builds",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "integer" },
+        "duration": { "type": "integer" },
+        "durationUnit": { "type": "string", "enum": ["days", "lifetime"] },
+        "buildLimit": { "type": "integer" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "isPopular": { "type": "boolean" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["id", "name", "price", "duration", "durationUnit", "buildLimit", "features"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Financial record for user balance",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "integer" },
+        "type": { "type": "string", "enum": ["topup", "purchase", "refund"] },
+        "description": { "type": "string" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["id", "userId", "amount", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/transactions/{txId}": {
+      "schema": "Transaction",
+      "description": "Financial logs"
+    },
+    "/inviteCodes/{code}": {
+      "schema": "InviteCode",
+      "description": "Invite codes for registration"
+    },
+    "/licenses/{keyId}": {
+      "schema": "License",
+      "description": "Store license keys"
+    },
+    "/plans/{planId}": {
+      "schema": "SubscriptionPlan",
+      "description": "Marketplace plans"
+    },
+    "/builds/{buildId}": {
+      "schema": "AppBuild",
+      "description": "User application builds"
+    },
+    "/system/config": {
+      "schema": "SystemConfig",
+      "description": "Global config"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "OneCore SDK Admin Panel",
+  "description": "Professional administration panel for OneCore SDK, managing licenses, resellers, and stealth virtualization builds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"],
+  "cloningMetadata": [
+    {
+      "packageName": "com.pubg.imobile",
+      "version": "4.3.0",
+      "entryPoint": "com.epicgames.ue4.GameActivity",
+      "cloneMode": "FULL_CLONE"
+    },
+    {
+      "packageName": "com.pubg.bgmi",
+      "version": "4.3.0",
+      "entryPoint": "com.epicgames.ue4.GameActivity",
+      "cloneMode": "FULL_CLONE"
+    }
+  ]
+}
