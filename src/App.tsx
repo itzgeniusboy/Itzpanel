@@ -44,6 +44,7 @@ const AppContent = () => {
     return (
         <Routes>
             <Route path="/" element={user && profile ? <Navigate to="/dashboard" replace /> : <Landing />} />
+            <Route path="/home" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route

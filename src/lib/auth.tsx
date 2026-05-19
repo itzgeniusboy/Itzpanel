@@ -45,7 +45,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const profileRef = doc(db, 'users', firebaseUser.uid);
         unsubscribeProfile = onSnapshot(profileRef, async (docSnap) => {
           if (docSnap.exists()) {
-            setProfile(docSnap.data() as UserProfile);
+            const data = docSnap.data() as UserProfile;
+            
+            // Auto-elevate owner email to admin if not already
+            if (firebaseUser.email === 'itzraviking@gmail.com' && data.role !== 'admin') {
+              data.role = 'admin';
+              await setDoc(profileRef, data, { merge: true });
+            }
+            
+            setProfile(data);
             setLoading(false);
           } else {
             const isBootstrappedAdmin = firebaseUser.email === 'itzraviking@gmail.com';
@@ -57,7 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 createdAt: Date.now()
               };
               await setDoc(profileRef, newProfile);
-              // Profile state will be updated by the next snapshot trigger
+              setProfile(newProfile);
+              setLoading(false);
             } else {
               setProfile(null);
               setLoading(false);
