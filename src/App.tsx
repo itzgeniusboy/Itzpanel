@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
@@ -26,7 +26,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
         <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-10 text-center">
           <h1 className="text-4xl font-bold mb-4">Protocol Termination</h1>
           <p className="text-zinc-500 mb-8">An unexpected exception occurred in the matrix core.</p>
-          <button onClick={() => window.location.href = '/'} className="px-6 py-3 bg-blue-600 rounded-xl font-bold">Restart Terminal</button>
+          <button onClick={() => window.location.hash = '/'} className="px-6 py-3 bg-blue-600 rounded-xl font-bold">Restart Terminal</button>
         </div>
       );
     }
@@ -151,11 +151,11 @@ const AppContent = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <HashRouter>
         <AuthProvider>
           <AppContent />
         </AuthProvider>
-      </BrowserRouter>
+      </HashRouter>
     </ErrorBoundary>
   );
 }
