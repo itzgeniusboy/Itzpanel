@@ -10,6 +10,7 @@ import { Register } from './components/Register';
 
 import { AdminResellers } from './components/AdminResellers';
 import { Marketplace } from './components/Marketplace';
+import { Landing } from './components/Landing';
 
 const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
   const { user, profile, loading, isAdmin } = useAuth();
@@ -38,12 +39,15 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
 };
 
 const AppContent = () => {
+    const { user, profile } = useAuth();
+
     return (
         <Routes>
+            <Route path="/" element={user && profile ? <Navigate to="/dashboard" replace /> : <Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
-                path="/"
+                path="/dashboard"
                 element={
                     <ProtectedRoute>
                         <Layout>

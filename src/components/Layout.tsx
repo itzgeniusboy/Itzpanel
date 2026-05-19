@@ -21,7 +21,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const navItems = [
-    { name: 'Terminal', path: '/', icon: LayoutDashboard },
+    { name: 'Terminal', path: '/dashboard', icon: LayoutDashboard },
     ...(profile?.role !== 'user' ? [
       { name: 'Licenses', path: '/licenses', icon: Key },
       { name: 'Market', path: '/plans', icon: Zap },
