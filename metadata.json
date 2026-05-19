@@ -1,6 +1,6 @@
 {
-  "name": "OneCore SDK Admin Panel",
-  "description": "Professional administration panel for OneCore SDK, managing licenses, resellers, and stealth virtualization builds.",
+  "name": "OneCore | AAR Project Forge",
+  "description": "Enterprise-grade AAR distribution platform and management nexus for OneCore SDK protocols.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"],
   "cloningMetadata": [

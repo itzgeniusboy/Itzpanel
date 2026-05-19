@@ -44,6 +44,8 @@
         "resellerEmail": { "type": "string" },
         "deviceId": { "type": "string" },
         "status": { "type": "string", "enum": ["active", "paused", "expired"] },
+        "lastPulse": { "type": "integer" },
+        "nodeStatus": { "type": "string", "enum": ["online", "offline"] },
         "expiresAt": { "type": "integer" },
         "maxUsage": { "type": "integer" },
         "currentUsage": { "type": "integer" },

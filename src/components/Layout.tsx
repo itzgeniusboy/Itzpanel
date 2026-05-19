@@ -107,13 +107,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="fixed top-0 right-0 -mr-40 -mt-40 h-96 w-96 rounded-full bg-blue-600/5 blur-[100px] pointer-events-none" />
         <div className="fixed bottom-0 left-0 -ml-40 -mb-40 h-96 w-96 rounded-full bg-purple-600/5 blur-[100px] pointer-events-none" />
 
-        {/* Mobile Header */}
-        <header className="flex h-20 items-center justify-between border-b border-zinc-900 bg-black/80 backdrop-blur-md px-6 md:hidden sticky top-0 z-40">
-          <div className="flex items-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <Zap size={22} fill="currentColor" />
-            </div>
-            <span className="ml-3 text-xl font-display font-bold text-white tracking-widest">ONECore</span>
+      {/* Mobile Header */}
+      <header className="flex h-20 items-center justify-between border-b border-zinc-900 bg-black/80 backdrop-blur-md px-6 md:hidden sticky top-0 z-40">
+        <div className="flex items-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
+            <Zap size={22} fill="currentColor" />
+          </div>
+          <span className="ml-3 text-xl font-display font-bold text-white tracking-widest">ONECore</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-emerald-500">
+             ₹{(profile?.balance || 0).toLocaleString()}
           </div>
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
@@ -121,12 +125,29 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           >
             <Menu size={24} />
           </button>
-        </header>
-
-        <div className="p-6 md:p-12 max-w-[1400px] mx-auto min-h-screen">
-          {children}
         </div>
-      </main>
+      </header>
+
+      <div className="p-4 sm:p-6 md:p-12 max-w-[1400px] mx-auto min-h-screen">
+        {children}
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-zinc-900 bg-black/80 p-2 pb-6 backdrop-blur-xl md:hidden">
+        {navItems.slice(0, 4).map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex flex-col items-center gap-1 rounded-xl px-4 py-2 transition-all ${
+              location.pathname === item.path ? 'text-blue-500' : 'text-zinc-500'
+            }`}
+          >
+            <item.icon size={20} className={location.pathname === item.path ? 'scale-110' : ''} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">{item.name}</span>
+          </Link>
+        ))}
+      </nav>
+    </main>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>

@@ -270,25 +270,25 @@ export const Dashboard = () => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative overflow-hidden rounded-[2rem] border border-zinc-900 bg-zinc-950/40 p-7 backdrop-blur-md hover:border-zinc-800 transition-all"
+      className="group relative overflow-hidden rounded-[2rem] border border-zinc-900 bg-zinc-950/40 p-5 sm:p-7 backdrop-blur-md hover:border-zinc-800 transition-all"
     >
       <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-500/5 blur-3xl pointer-events-none group-hover:bg-blue-500/10 transition-all" />
       
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">{title}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1 sm:space-y-2">
+          <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">{title}</p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-4xl font-display font-bold text-white tracking-tighter">{value}</h3>
-            {detail && <span className="text-[10px] text-zinc-600 font-mono tracking-widest">{detail}</span>}
+            <h3 className="text-2xl sm:text-4xl font-display font-bold text-white tracking-tighter">{value}</h3>
+            {detail && <span className="text-[8px] sm:text-[10px] text-zinc-600 font-mono tracking-widest">{detail}</span>}
           </div>
           {growth && (
-            <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 uppercase">
-              <TrendingUp size={12} /> {growth} Velocity
+            <div className="flex items-center gap-1 text-[8px] sm:text-[10px] font-bold text-emerald-500 uppercase">
+              <TrendingUp size={10} className="sm:w-3 sm:h-3" /> {growth} Velocity
             </div>
           )}
         </div>
-        <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900/50 border border-zinc-800/50 ${color} shadow-2xl transition-transform group-hover:scale-110`}>
-          <Icon size={24} />
+        <div className={`flex h-10 w-10 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-zinc-800/50 ${color} shadow-2xl transition-transform group-hover:scale-110`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
     </motion.div>
@@ -508,55 +508,57 @@ export const Dashboard = () => {
                           {build.status || 'Finished'}
                         </span>
                       </div>
-                      <div className="flex items-center gap-5 w-full">
-                        <div className="h-16 w-16 rounded-[1.5rem] bg-zinc-900 flex items-center justify-center text-blue-500 border border-zinc-800 shadow-xl group-hover:scale-105 transition-transform">
-                          <Box size={28} />
+                      <div className="flex items-center gap-4 sm:gap-5 w-full">
+                        <div className="h-12 w-12 sm:h-16 sm:w-16 shrink-0 rounded-2xl sm:rounded-[1.5rem] bg-zinc-900 flex items-center justify-center text-blue-500 border border-zinc-800 shadow-xl group-hover:scale-105 transition-transform">
+                          <Box className="w-6 h-6 sm:w-7 sm:h-7" />
                         </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-white mb-1">{build.appName}</h4>
-                          <div className="flex flex-wrap items-center gap-3">
-                            <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">{build.packageName}</span>
-                            <span className="h-1 w-1 rounded-full bg-zinc-800" />
-                            <span className="text-[9px] font-mono text-blue-500 font-bold uppercase transition-colors group-hover:text-blue-400">Core Ver: v{build.version}</span>
+                        <div className="min-w-0">
+                          <h4 className="text-base sm:text-lg font-bold text-white mb-1 truncate">{build.appName}</h4>
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+                            <span className="text-[8px] sm:text-[9px] font-mono text-zinc-600 uppercase tracking-widest truncate max-w-[120px] sm:max-w-none">{build.packageName}</span>
+                            <span className="h-1 w-1 rounded-full bg-zinc-800 hidden sm:block" />
+                            <span className="text-[8px] sm:text-[9px] font-mono text-blue-500 font-bold uppercase transition-colors group-hover:text-blue-400">v{build.version}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 w-full sm:w-auto self-end sm:self-center">
-                        <div className="flex items-center gap-3 p-2 rounded-2xl bg-black/40 border border-zinc-900">
-                           <div className="text-right px-2">
-                             <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest">Injection</p>
-                             <span className={`text-[10px] font-bold uppercase ${build.isActive ? 'text-emerald-500' : 'text-zinc-600'}`}>
+                      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+                        <div className="flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-2xl bg-black/40 border border-zinc-900">
+                           <div className="text-right px-1 sm:px-2">
+                             <p className="text-[7px] sm:text-[8px] font-bold text-zinc-600 uppercase tracking-widest">Injection</p>
+                             <span className={`text-[9px] sm:text-[10px] font-bold uppercase ${build.isActive ? 'text-emerald-500' : 'text-zinc-600'}`}>
                                {build.isActive ? 'ON' : 'OFF'}
                              </span>
                           </div>
                           <button 
                             onClick={() => toggleBuildStatus(build.id, !!build.isActive)}
-                            className={`h-11 w-11 rounded-xl flex items-center justify-center transition-all ${
+                            className={`h-9 w-9 sm:h-11 sm:w-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all ${
                               build.isActive 
                                 ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
                                 : 'bg-zinc-800 text-zinc-600 border border-zinc-700'
                             }`}
                           >
-                            <Power size={20} />
+                            <Power className="w-4 h-4 sm:w-5 sm:h-5" />
                           </button>
                         </div>
                         
-                        {build.downloadUrl && (
-                          <button 
-                            onClick={() => window.open(build.downloadUrl, '_blank')}
-                            className="h-11 w-11 rounded-xl bg-blue-600 border border-blue-500 flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
-                          >
-                            <ArrowUpRight size={18} />
-                          </button>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {build.downloadUrl && (
+                            <button 
+                              onClick={() => window.open(build.downloadUrl, '_blank')}
+                              className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg sm:rounded-xl bg-blue-600 border border-blue-500 flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+                            >
+                              <ArrowUpRight className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                            </button>
+                          )}
 
-                        <button 
-                          onClick={() => deleteBuild(build.id)}
-                          className="h-11 w-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 hover:text-red-500 hover:border-red-500/30 transition-all hover:bg-black"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                          <button 
+                            onClick={() => deleteBuild(build.id)}
+                            className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg sm:rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 hover:text-red-500 hover:border-red-500/30 transition-all hover:bg-black"
+                          >
+                            <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
