@@ -138,9 +138,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              await signInWithRedirect(auth, provider);
            }
         } else if (error.code === 'auth/unauthorized-domain') {
-           const domain1 = 'ais-dev-somart7w47tyynptyctldq-470491496334.asia-southeast1.run.app';
-           const domain2 = 'ais-pre-somart7w47tyynptyctldq-470491496334.asia-southeast1.run.app';
-           alert(`Authentication Error: Unauthorized Domain.\n\nYou must add the following domains to your Firebase Console (Authentication > Settings > Authorized domains):\n\n1. ${domain1}\n2. ${domain2}\n\nThis is why login is failing.`);
+           const currentDomain = window.location.hostname;
+           alert(`Authentication Error: Unauthorized Domain\n\nFix (English):\nYou must add "${currentDomain}" to your Firebase Console (Authentication > Settings > Authorized domains).\n\nSudhaar (Hindi):\nAapko Firebase Console mein jaakar "${currentDomain}" ko "Authorized domains" ki list mein add karna hoga. Iske bina login nahi hoga.`);
         } else {
            alert(`Authentication Error: ${error.code}\n${error.message}`);
         }
